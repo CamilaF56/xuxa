@@ -780,8 +780,6 @@ bool BoardMakeMove(Board& board, int from, int to, bool updateWhoMoves) {
         if (!PieceHasType(board.squares[to], PIECE_NONE)
                 && !PieceHasColor(board.squares[to], board.state.whoMoves))
             board.state.halfmoves = 0;
-
-        assert(board.state.halfmoves == 100);
     }
 
     board.state.enPassantSquare = 0;
