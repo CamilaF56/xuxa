@@ -1,0 +1,8 @@
+-Iinclude
+-Isrc/raylib
+-Isrc/tinycthread
+
+-D_DEFAULT_SOURCE
+-DPLATFORM_ANDROID
+-DGRAPHICS_API_OPENGL_ES2
+

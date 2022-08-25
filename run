@@ -1,0 +1,90 @@
+#!/usr/bin/env sh
+
+set -e
+
+CPPFLAGS="
+-Iinclude
+-Isrc/raylib
+-Isrc/tinycthread
+
+-D_DEFAULT_SOURCE
+-DPLATFORM_ANDROID
+-DGRAPHICS_API_OPENGL_ES2
+"
+
+CFLAGS="-Wall -Wextra -Wpedantic -std=c11 -fpic"
+CXXFLAGS="-Wall -Wextra -Wpedantic -std=c++14 -fpic"
+
+LDFLAGS="-shared -u ANativeActivity_onCreate -Wl,--no-undefined"
+LDLIBS="-llog -landroid -lEGL -lGLESv2 -lOpenSLES -lm"
+
+RAYLIB_SRCS="
+src/raylib/rcore.c
+src/raylib/rshapes.c
+src/raylib/rtextures.c
+src/raylib/rtext.c
+src/raylib/utils.c
+src/raylib/rmodels.c
+src/raylib/raudio.c
+"
+
+SRCS="
+src/main.cpp
+src/Board.cpp
+
+src/android_native_app_glue.c
+
+src/tinycthread/tinycthread.c
+
+$RAYLIB_SRCS
+"
+
+OBJS=""
+
+LIB="/sdcard/libmain.so"
+
+for src in $SRCS; do
+    obj="${src%%.c}"
+    obj="obj/${obj%%.cpp}.o"
+    OBJS="$OBJS $obj"
+
+    mkdir -p $(dirname $obj)
+
+    [ ! -e $obj -o $obj -ot $src ] || continue
+    case ${src##*.} in
+        cpp | cc)
+            CC=clang++
+            FLAGS=$CXXFLAGS
+            ;;
+        c)
+            CC=clang
+            FLAGS=$CFLAGS
+            ;;
+    esac
+
+    echo "Compiling $src into $obj..."
+    $CC -c $src $CPPFLAGS $FLAGS -o $obj
+done
+
+echo "Building libmain.so..."
+for obj in $OBJS; do
+    if  [ ! -e $LIB -o $obj -nt $LIB ]; then
+        clang $OBJS $LDFLAGS $LDLIBS -o $LIB
+        break
+    fi
+done
+
+echo "Running game..."
+am start -S -n com.termux.sdl/.TermuxNativeActivity -e nativeApp $LIB
+
+# echo "Building APK..."
+# aapt package -f -M android/AndroidManifest.xml -S android/res -I /data/data/com.termux/files/usr/share/aapt/android.jar -F xadrez.unaligned.unsigned.apk apk
+
+# echo "Aligning APK..."
+# zipalign -f -p 4 xadrez.unaligned.unsigned.apk xadrez.unsigned.apk
+
+# echo "Signing APK..."
+# signapk sign --key android/key.pk8 --cert android/cert.x509.pem --out xadrez.apk xadrez.unsigned.apk
+
+# termux-open xadrez.apk
+
