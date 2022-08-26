@@ -1,6 +1,12 @@
 #ifndef BOARD_HPP
 #define BOARD_HPP
 
+
+#include <fstream>
+#include <iostream>
+
+using namespace std;
+
 #include "raylib.h"
 
 #define BOARD_SQUARE_LENGTH_FACTOR 10.f
@@ -30,6 +36,16 @@ typedef enum {
     CASTLING_KING_SIDE,
     CASTLING_QUEEN_SIDE,
 } CastlingType;
+
+typedef struct {
+
+    bool isLogged;
+    char name[50];
+    int rating;
+    char email[50];
+    int id;
+
+} Profile;
 
 typedef struct {
     /* The position that's start draw the board */
@@ -83,6 +99,10 @@ typedef struct {
         int list[64][64];
     } move;
 } Board;
+
+void login(int& menuorboard);
+
+void GameBoard(int& menuorboard);
 
 void gameDificult(int& menuorboard);
 

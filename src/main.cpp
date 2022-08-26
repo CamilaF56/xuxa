@@ -69,6 +69,13 @@ int main(void) {
         case 4:
             gameDificult(menuorboard);
             break;
+        case 5:
+            login(menuorboard);
+            break;
+        case 6:
+            GameBoard(menuorboard);
+            break;
+
 
 
 

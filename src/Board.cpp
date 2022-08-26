@@ -28,8 +28,20 @@ void perft(PerftData& data);
 /*
  */
 
+int counter;//variavel para contar os char digitados
+int counterR;
+int countere;
+
+bool istexting;
+bool istextingr;
+bool istextinge;
+
+int selectionB;
+
+
 int quadros;
 bool isSinglePlayer;
+
 Texture2D xuxinha;
 Texture2D mao;
 Texture2D logo;
@@ -76,6 +88,34 @@ void menuInit() {
     txutxucao = LoadTexture("./assets/txutxucao ufs.png");
     joseval = LoadTexture("./assets/professorjoseval.png");
     pecas = LoadTexture("./assets/chess_pieces.png");
+
+}
+void reverse(char s[])
+{
+     int i, j;
+     char c;
+
+     for (i = 0, j = strlen(s)-1; i<j; i++, j--) {
+         c = s[i];
+         s[i] = s[j];
+         s[j] = c;
+     }
+}
+
+void myitoa(int n, char s[])
+ {
+     int i, sign;
+
+     if ((sign = n) < 0)  /* record sign */
+         n = -n;          /* make n positive */
+     i = 0;
+     do {       /* generate digits in reverse order */
+         s[i++] = n % 10 + '0';   /* get next digit */
+     } while ((n /= 10) > 0);     /* delete it */
+     if (sign < 0)
+         s[i++] = '-';
+     s[i] = '\0';
+     reverse(s);
 }
 
 void menu(int& menuorboard) {
@@ -122,7 +162,7 @@ void menu(int& menuorboard) {
     DrawText("Jogar", xOfButtons + inBetweenTextX, YOfButtons + inBetweenTextY, sizeOftext, WHITE);
 
     if (CheckCollisionPointRec(mousePoint,rec1)) {
-        DrawText("Xadrez da Xuxinha", xOfButtons, screenHeight/15 + logo.height/2, sizeOftext2, WHITE);
+
         DrawTexture(mao,handX,YOfButtons,RAYWHITE);
         if(IsMouseButtonPressed(0)) {
             menuorboard = 3;
@@ -136,10 +176,11 @@ void menu(int& menuorboard) {
         sizeOftext, WHITE);
 
     if (CheckCollisionPointRec(mousePoint,rec2)) {
-        DrawText("Estilos de Tabuleiros", xOfButtons, screenHeight/3, sizeOftext2, WHITE);
+
         DrawTexture(mao,handX,YOfButtons + inBetween,RAYWHITE);
         if(IsMouseButtonPressed(0)) {
-
+            menuorboard = 6;
+            selectionB = 0;
         }
     }
 
@@ -150,7 +191,7 @@ void menu(int& menuorboard) {
             sizeOftext, WHITE);
 
     if (CheckCollisionPointRec(mousePoint,rec3)) {
-        DrawText("Aprenda a jogar xadrez", xOfButtons, screenHeight/3, sizeOftext2, WHITE);
+
         DrawTexture(mao,handX,YOfButtons + (inBetween * 2),RAYWHITE);
         if(IsMouseButtonPressed(0)) {
             quadros = 1;
@@ -160,17 +201,23 @@ void menu(int& menuorboard) {
 
     DrawRectangleLines(xOfButtons, YOfButtons + (inBetween * 3), buttonWidth, buttonHeight, PINK);
 
-    DrawText("Créditos", xOfButtons + inBetweenTextX,
+
+    DrawText("Meu perfil", xOfButtons + inBetweenTextX,
         YOfButtons + (inBetween * 3) + inBetweenTextY,
         sizeOftext, WHITE
     );
 
     if (CheckCollisionPointRec(mousePoint,rec4)) {
-        DrawText("Grupo", xOfButtons, screenHeight/3, sizeOftext2, WHITE);
+
         DrawTexture(mao,handX,YOfButtons + (inBetween * 3),RAYWHITE);
         if(IsMouseButtonPressed(0)) {
-
-
+            counter = 0;
+            counterR = 0;
+            countere = 0;
+            istexting = false;
+            istextingr = false;
+            istextinge = false;
+            menuorboard = 5;
         }
     }
 
@@ -188,6 +235,408 @@ void menu(int& menuorboard) {
 
     EndDrawing();
 }
+
+void GameBoard(int& menuorboard){
+
+    int screenHeight = GetScreenHeight();
+    int screenwidth = GetScreenWidth();
+
+    int buttonWidth = screenwidth/20;
+    int buttonHeight = screenHeight/14;
+
+
+    Vector2 mousePoint = GetMousePosition();
+
+    BeginDrawing();
+
+
+    ClearBackground(GRAY);
+    int squareSize = screenHeight/20;
+    int squarex = screenwidth/2 - squareSize*4;
+    int squarey = screenHeight/2 - squareSize*4;
+
+
+    Rectangle previous = {screenwidth/4 - buttonWidth,screenHeight/2 - buttonHeight/2,buttonWidth,buttonHeight};
+    Rectangle next = {(screenwidth *3) /4 - buttonWidth / 2,screenHeight/2 - buttonHeight/2,buttonWidth,buttonHeight};
+    Rectangle voltar = {screenwidth/4 - buttonWidth,(screenHeight*3)/4,buttonWidth*4,buttonHeight};
+
+
+
+    DrawRectangleRec(previous,YELLOW);
+    DrawText("<-",screenwidth/4 - buttonWidth + screenwidth/1000,
+             screenHeight/2 - buttonHeight/2 + screenHeight/1000,
+             screenwidth/20,BLACK);
+
+    DrawRectangleRec(next,YELLOW);
+
+    DrawText("->",(screenwidth * 3)/4 - buttonWidth/2 + screenwidth/1000,
+             screenHeight/2 - buttonHeight/2 + screenHeight/1000,
+             screenwidth/20,BLACK);
+
+    DrawRectangleRec(voltar,YELLOW);
+
+    DrawText("voltar",screenwidth/4,(screenHeight*3)/4,screenwidth/30,BLACK);
+
+    if (CheckCollisionPointRec(mousePoint,voltar)) {
+
+        DrawText("voltar",screenwidth/4,(screenHeight*3)/4,screenwidth/30,WHITE);
+
+        if(IsMouseButtonPressed(0)){
+            menuorboard = 0;
+        }
+    }
+
+    if (CheckCollisionPointRec(mousePoint,previous)) {
+
+         DrawText("<-",screenwidth/4 - buttonWidth + screenwidth/1000,
+                screenHeight/2 - buttonHeight/2 + screenHeight/1000,
+                screenwidth/20,WHITE);
+
+        if(IsMouseButtonPressed(0))
+        if(selectionB > 0){
+            selectionB --;
+        }else{
+            selectionB = 10;
+        }
+    }
+
+    if (CheckCollisionPointRec(mousePoint,next)) {
+
+        DrawText("->",(screenwidth * 3)/4 - buttonWidth/2 + screenwidth/1000,
+             screenHeight/2 - buttonHeight/2 + screenHeight/1000,
+             screenwidth/20,WHITE);
+
+        if(IsMouseButtonPressed(0))
+        if(selectionB < 10){
+            selectionB ++;
+        }else{
+            selectionB = 0;
+        }
+    }
+
+    char cores[11][50]= {"rosinha", "azul","roxinho","verdinho",
+                        "dourado","vermelho","vinho","esgoto","beeeje","escuro",
+                        "rosa choque"};
+
+    Color colors[11] = {PINK,SKYBLUE,PURPLE,GREEN,
+                       GOLD,RED,MAROON,LIME,BEIGE,BLACK,MAGENTA};
+
+    DrawText(cores[selectionB],screenwidth/2 - screenwidth/10,
+             screenHeight/10,screenwidth/20,colors[selectionB]);
+
+
+
+    for(int i = 0; i < 8; i++){
+        for(int j = 0; j < 8; j++){
+            Color cor = ((i + j) % 2 == 0) ? WHITE : colors[selectionB];
+            DrawRectangle(squarex + (j*squareSize),squarey+(i*squareSize),squareSize,squareSize,cor);
+        }
+    }
+
+
+    Board board;
+
+    EndDrawing();
+}
+
+
+static void createLoginFile(){
+
+    Profile player = {false,"",0,"",0};
+
+    const char * path = "games/login.txt";
+
+    fstream file(path,ios::out);
+
+    file.write((const char *)(&player),sizeof(Profile));
+
+    file.close();
+
+}
+
+void login(int& menuorboard){
+
+
+    int screenHeight = GetScreenHeight();
+    int screenwidth = GetScreenWidth();
+
+    int buttonWidth = screenwidth/5;
+    int buttonHeight = screenHeight/30;
+
+    int umxai = screenwidth/4 + screenwidth/4 - buttonWidth/2;
+
+    Vector2 mousePoint = GetMousePosition();
+
+    BeginDrawing();
+    ClearBackground(BLACK);
+
+    Rectangle retanguloGrande = {screenwidth/4,screenHeight/8,screenwidth/2,(screenHeight * 3)/4};
+
+
+    DrawRectangleLinesEx(retanguloGrande,2,BLUE);
+
+    Profile player;
+
+    char rating[50];
+
+    int sizeFont = screenHeight/30;
+
+    int xButtonSave = screenwidth/4 + screenwidth/4 + buttonWidth/2;
+    int yButtonSave = (3*screenHeight)/4;
+
+    Rectangle saveRec = {xButtonSave,yButtonSave,buttonWidth/2,buttonHeight*2};
+
+
+    const char * path = "games/login.txt";
+
+    fstream file(path,ios::in|ios::out);
+
+    if(file.fail()){
+        file.close();
+        createLoginFile();
+        file.open(path,ios::in|ios::out);
+    }
+
+    int xtext = umxai + screenwidth/300;
+    int x = screenwidth/4 + screenwidth/100;
+
+    int ytext = screenHeight/3 + buttonHeight + screenHeight/500;
+    int widthtext = screenHeight/3 + buttonHeight + screenHeight/50+ (buttonHeight*3)/5;
+
+    file.read((char *)(&player), sizeof(Profile));
+
+    if(player.isLogged){
+
+        Rectangle voltar = {xButtonSave - buttonWidth * 1.5,yButtonSave, buttonWidth/2,buttonHeight*2};
+
+        DrawRectangleRec(voltar,YELLOW);
+
+        DrawText("voltar", xButtonSave - (buttonWidth*1.4), yButtonSave + screenHeight/50,sizeFont,BLACK);
+
+        if (CheckCollisionPointRec(mousePoint,voltar)) {
+
+            DrawText("voltar",xButtonSave - (buttonWidth*1.4), yButtonSave + screenHeight/50,sizeFont,WHITE);
+
+            if(IsMouseButtonPressed(0)){
+                menuorboard = 0;
+            }
+        }
+
+
+        DrawText(player.name, umxai, screenHeight/5, sizeFont * 3, WHITE);
+        char rating1[50];
+        myitoa(player.rating,rating1);
+        DrawText("FIDE rating:",x ,ytext + buttonHeight*2,sizeFont,RED);
+        DrawText(rating1,xtext,ytext + buttonHeight*2,sizeFont * 2,RED);
+        DrawText("Email:",x ,ytext + buttonHeight * 6,sizeFont,YELLOW);
+        DrawText(player.email,x + sizeFont * 5 ,ytext + buttonHeight*6,sizeFont * 1.5,YELLOW);
+
+        DrawRectangleRec(saveRec,YELLOW);
+
+        DrawText("Editar",xButtonSave + screenwidth/50,yButtonSave+screenHeight/50,sizeFont,BLACK);
+
+
+        if (CheckCollisionPointRec(mousePoint,saveRec)) {
+            DrawText("Editar",xButtonSave + screenwidth/50,yButtonSave+screenHeight/50,sizeFont,WHITE);
+            if(IsMouseButtonPressed(0)) {
+                player.id = 0;
+                player.isLogged = false;
+            }
+
+        }
+
+
+    }else{
+
+        DrawText("clique para digitar e enter para confirmar",
+                screenwidth/4 + screenwidth/200,
+                screenHeight/8 + screenHeight/80
+                ,sizeFont,WHITE);
+
+        Rectangle caixadetexto = {
+            umxai,
+            screenHeight/3 + buttonHeight,
+            buttonWidth,buttonHeight
+        };
+
+        DrawText("Nome:",umxai,screenHeight/3,sizeFont,RED);
+        DrawRectangleRec(caixadetexto,YELLOW);
+        DrawText(player.name,xtext,ytext,sizeFont,BLACK);
+
+        if (CheckCollisionPointRec(mousePoint,caixadetexto)) {
+            if(IsMouseButtonPressed(0)) {
+                istexting = true;
+                istextingr = false;
+                istextinge = false;
+            }
+        }
+
+
+        if (istexting){
+
+            DrawText("Seu apelido",x,ytext - buttonHeight*4,sizeFont,WHITE);
+
+            DrawRectangleRec(caixadetexto,WHITE);
+            player.name[counter] = (char)GetCharPressed();
+
+            if(IsKeyPressed(KEY_BACKSPACE)){
+                player.name[counter] = (char)0;
+                counter -= 2 ;
+                if(counter < 0){
+                    player.name[0] = (char)0;
+                    counter = 0;
+                }
+            }
+            if(IsKeyPressed(KEY_ENTER)){
+                istexting = false;
+            }
+            if((int)player.name[counter] != 0){
+                counter ++;
+            }
+
+            DrawText(player.name,xtext,ytext,sizeFont,BLACK);
+
+        }
+
+         Rectangle caixadetextoR = {
+            umxai,
+            screenHeight/3 + buttonHeight * 3,
+            buttonWidth,buttonHeight
+        };
+
+        DrawText("Rating:",umxai,screenHeight/3 + buttonHeight * 2,sizeFont,RED);
+        DrawRectangleRec(caixadetextoR,YELLOW);
+        DrawText(rating,xtext,ytext + buttonHeight*2,sizeFont,BLACK);
+
+        if (CheckCollisionPointRec(mousePoint,caixadetextoR)) {
+            if(IsMouseButtonPressed(0)) {
+                istextingr = true;
+                istexting = false;
+                istextinge = false;
+            }
+        }
+
+
+
+        if (istextingr){
+
+            DrawText("Seu FIDE rating",x,ytext - buttonHeight*4,sizeFont,WHITE);
+            DrawText("Caso não possua, digite 1000",x,ytext - buttonHeight*3,sizeFont,WHITE);
+
+            DrawRectangleRec(caixadetextoR,WHITE);
+
+            rating[counterR] = (char)GetCharPressed();
+
+            if((rating[counterR] < 48 || rating[counterR] > 57) && (int)rating[counterR] != 0){
+                rating[counterR] = (char)0;
+                counterR -=2;
+                if(counterR < 0){
+                    rating[0] = (char)0;
+                    counterR = 0;
+                }
+            }
+
+            if(IsKeyPressed(KEY_BACKSPACE)){
+                rating[counterR] = (char)0;
+                counterR -= 2 ;
+                if(counterR < 0){
+                    rating[0] = (char)0;
+                    counterR = 0;
+                }
+            }
+            if(IsKeyPressed(KEY_ENTER)){
+
+                istextingr = false;
+
+            }
+
+            if((int)rating[counterR] != 0){
+                counterR ++;
+            }
+            player.rating = atoi(rating);
+            DrawText(rating,xtext,ytext + buttonHeight*2,sizeFont,BLACK);
+        }
+
+
+
+        Rectangle caixadetextoE = {
+            umxai,
+            screenHeight/3 + buttonHeight * 5,
+            buttonWidth,buttonHeight
+        };
+
+        DrawText("Email:",umxai,screenHeight/3 + buttonHeight*4,sizeFont,RED);
+        DrawRectangleRec(caixadetextoE,YELLOW);
+        DrawText(player.email,xtext,ytext + buttonHeight*4,sizeFont,WHITE);
+
+        if (CheckCollisionPointRec(mousePoint,caixadetextoE)) {
+            if(IsMouseButtonPressed(0)) {
+                istexting = false;
+                istextingr = false;
+                istextinge = true;
+            }
+        }
+
+
+        if (istextinge){
+
+            DrawText("Seu endereço de email",x,ytext - buttonHeight*4,sizeFont,WHITE);
+
+            DrawRectangleRec(caixadetextoE,WHITE);
+            player.email[countere] = (char)GetCharPressed();
+
+            if(IsKeyPressed(KEY_BACKSPACE)){
+                player.email[countere] = (char)0;
+                countere -= 2;
+                if(countere < 0){
+                    player.email[0] = (char)0;
+                    countere = 0;
+                }
+            }
+            if(IsKeyPressed(KEY_ENTER)){
+                istextinge = false;
+            }
+            if((int)player.email[countere] != 0){
+                countere ++;
+            }
+
+            DrawText(player.email,xtext,ytext + buttonHeight*4,sizeFont,BLACK);
+        }
+
+        DrawRectangleRec(saveRec,YELLOW);
+
+
+        DrawText("SALVAR",xButtonSave + screenwidth/50,yButtonSave+screenHeight/50,sizeFont,BLACK);
+
+        if (CheckCollisionPointRec(mousePoint,saveRec)) {
+            DrawText("SALVAR",xButtonSave + screenwidth/50,yButtonSave+screenHeight/50,sizeFont,WHITE);
+            if(IsMouseButtonPressed(0)) {
+                player.id = 1;
+                player.isLogged = true;
+                menuorboard = 0;
+            }
+
+        }
+
+    }
+
+    file.close();
+
+
+    file.open(path,ios::out);
+
+    file.write((const char *)(&player),sizeof(Profile));
+
+
+    file.close();
+
+
+
+    EndDrawing();
+
+
+}
+
 
 void gamemode(int &menuorboard) {
 
@@ -1032,6 +1481,9 @@ void BoardDraw(Board &board, int &menu) {
         board.squareLength
     };
 
+    Color colors[11] = {PINK,SKYBLUE,PURPLE,GREEN,
+                       GOLD,RED,MAROON,LIME,BEIGE,BLACK,MAGENTA};
+
     Color color, opositeColor;
 
     for (int square = 0; square < 64; square++) {
@@ -1041,11 +1493,19 @@ void BoardDraw(Board &board, int &menu) {
            * PieceRank(square);
 
         if ((PieceRank(square) + PieceFile(square)) % 2) {
-            color = board.squareBlackColor;
+
+
+            if(selectionB == 0){
+                color = board.squareBlackColor;
+            }else{
+                color = colors[selectionB];
+            }
+
             opositeColor = board.squareWhiteColor;
+
         } else {
-            color = board.squareWhiteColor;
-            opositeColor = board.squareBlackColor;
+            color = WHITE;
+            opositeColor = color;
         }
 
         /* Draw the square */

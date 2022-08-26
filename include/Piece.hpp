@@ -1,6 +1,8 @@
 #ifndef PIECE_HPP
 #define PIECE_HPP
 
+#include <fstream>
+
 /* PIECE_DATA:
  *
  * Every piece has a type and color associated with it, this data is formed as:
