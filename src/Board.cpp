@@ -237,12 +237,11 @@ void menu(int& menuorboard) {
 }
 
 void GameBoard(int& menuorboard){
+    float screenHeight = GetScreenHeight();
+    float screenwidth = GetScreenWidth();
 
-    int screenHeight = GetScreenHeight();
-    int screenwidth = GetScreenWidth();
-
-    int buttonWidth = screenwidth/20;
-    int buttonHeight = screenHeight/14;
+    float buttonWidth = screenwidth/20;
+    float buttonHeight = screenHeight/14;
 
 
     Vector2 mousePoint = GetMousePosition();
@@ -251,9 +250,9 @@ void GameBoard(int& menuorboard){
 
 
     ClearBackground(GRAY);
-    int squareSize = screenHeight/20;
-    int squarex = screenwidth/2 - squareSize*4;
-    int squarey = screenHeight/2 - squareSize*4;
+    float squareSize = screenHeight/20;
+    float squarex = screenwidth/2 - squareSize*4;
+    float squarey = screenHeight/2 - squareSize*4;
 
 
     Rectangle previous = {screenwidth/4 - buttonWidth,screenHeight/2 - buttonHeight/2,buttonWidth,buttonHeight};
@@ -355,15 +354,13 @@ static void createLoginFile(){
 }
 
 void login(int& menuorboard){
+    float screenHeight = GetScreenHeight();
+    float screenwidth = GetScreenWidth();
 
+    float buttonWidth = screenwidth/5;
+    float buttonHeight = screenHeight/30;
 
-    int screenHeight = GetScreenHeight();
-    int screenwidth = GetScreenWidth();
-
-    int buttonWidth = screenwidth/5;
-    int buttonHeight = screenHeight/30;
-
-    int umxai = screenwidth/4 + screenwidth/4 - buttonWidth/2;
+    float umxai = screenwidth/4 + screenwidth/4 - buttonWidth/2;
 
     Vector2 mousePoint = GetMousePosition();
 
@@ -379,10 +376,10 @@ void login(int& menuorboard){
 
     char rating[50];
 
-    int sizeFont = screenHeight/30;
+    float sizeFont = screenHeight/30;
 
-    int xButtonSave = screenwidth/4 + screenwidth/4 + buttonWidth/2;
-    int yButtonSave = (3*screenHeight)/4;
+    float xButtonSave = screenwidth/4 + screenwidth/4 + buttonWidth/2;
+    float yButtonSave = (3*screenHeight)/4;
 
     Rectangle saveRec = {xButtonSave,yButtonSave,buttonWidth/2,buttonHeight*2};
 
@@ -397,17 +394,17 @@ void login(int& menuorboard){
         file.open(path,ios::in|ios::out);
     }
 
-    int xtext = umxai + screenwidth/300;
-    int x = screenwidth/4 + screenwidth/100;
+    float xtext = umxai + screenwidth/300;
+    float x = screenwidth/4 + screenwidth/100;
 
-    int ytext = screenHeight/3 + buttonHeight + screenHeight/500;
-    int widthtext = screenHeight/3 + buttonHeight + screenHeight/50+ (buttonHeight*3)/5;
+    float ytext = screenHeight/3 + buttonHeight + screenHeight/500;
+    float widthtext = screenHeight/3 + buttonHeight + screenHeight/50+ (buttonHeight*3)/5;
 
     file.read((char *)(&player), sizeof(Profile));
 
     if(player.isLogged){
 
-        Rectangle voltar = {xButtonSave - buttonWidth * 1.5,yButtonSave, buttonWidth/2,buttonHeight*2};
+        Rectangle voltar = {xButtonSave - buttonWidth * 1.5f,yButtonSave, buttonWidth/2,buttonHeight*2};
 
         DrawRectangleRec(voltar,YELLOW);
 

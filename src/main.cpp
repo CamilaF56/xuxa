@@ -6,20 +6,15 @@
 
 #ifndef BOARD_PERFT
 int main(void) {
-
     int menuorboard = 0;//variavel para saber onde ta o menu
-
-
-    int screenWidth = GetScreenWidth();
-    int screenHeight = GetScreenHeight();
 
     Board board;
 
     InitWindow(0, 0, SCREEN_TITLE);
     SetWindowState(FLAG_WINDOW_RESIZABLE);
 
-    screenWidth = GetScreenWidth();
-    screenHeight = GetScreenHeight();
+    int screenWidth = GetScreenWidth();
+    int screenHeight = GetScreenHeight();
 
     /* Set the initial mouse position one pixel at bottom left of
      * the center of the window. This prevent some bugs when start

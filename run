@@ -69,7 +69,7 @@ done
 echo "Building libmain.so..."
 for obj in $OBJS; do
     if  [ ! -e $LIB -o $obj -nt $LIB ]; then
-        clang $OBJS $LDFLAGS $LDLIBS -o $LIB
+        clang++ $OBJS $LDFLAGS $LDLIBS -o $LIB
         break
     fi
 done
