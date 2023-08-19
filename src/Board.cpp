@@ -2,11 +2,10 @@
 #include <cstring>
 #include <cstdio>
 
-#include "raylib.h"
-
+#include "SAXA.hpp"
+#include "raylib/raylib.h"
 #include "Board.hpp"
 #include "Piece.hpp"
-#include "SAXA.hpp"
 
 #ifdef BOARD_PERFT
 
@@ -38,6 +37,7 @@ bool istextinge;
 
 int selectionB;
 
+int saxaDephtBoard;
 
 int quadros;
 bool isSinglePlayer;
@@ -90,32 +90,31 @@ void menuInit() {
     pecas = LoadTexture("./assets/chess_pieces.png");
 
 }
-void reverse(char s[])
-{
-     int i, j;
-     char c;
 
-     for (i = 0, j = strlen(s)-1; i<j; i++, j--) {
-         c = s[i];
-         s[i] = s[j];
-         s[j] = c;
-     }
+void reverse(char s[]) {
+    int i, j;
+    char c;
+
+    for (i = 0, j = strlen(s)-1; i<j; i++, j--) {
+        c = s[i];
+        s[i] = s[j];
+        s[j] = c;
+    }
 }
 
-void myitoa(int n, char s[])
- {
-     int i, sign;
+void myitoa(int n, char s[]) {
+    int i, sign;
 
-     if ((sign = n) < 0)  /* record sign */
-         n = -n;          /* make n positive */
-     i = 0;
-     do {       /* generate digits in reverse order */
-         s[i++] = n % 10 + '0';   /* get next digit */
-     } while ((n /= 10) > 0);     /* delete it */
-     if (sign < 0)
-         s[i++] = '-';
-     s[i] = '\0';
-     reverse(s);
+    if ((sign = n) < 0)  /* record sign */
+        n = -n;          /* make n positive */
+    i = 0;
+    do {       /* generate digits in reverse order */
+        s[i++] = n % 10 + '0';   /* get next digit */
+    } while ((n /= 10) > 0);     /* delete it */
+    if (sign < 0)
+        s[i++] = '-';
+    s[i] = '\0';
+    reverse(s);
 }
 
 void menu(int& menuorboard) {
@@ -138,7 +137,6 @@ void menu(int& menuorboard) {
     float buttonHeight = screenHeight/30;
 
     float sizeOftext = screenHeight/50;
-    float sizeOftext2 = screenHeight/20;
 
     float handX = screenwidth/4;
 
@@ -172,8 +170,8 @@ void menu(int& menuorboard) {
     DrawRectangleLines(xOfButtons, YOfButtons + inBetween, buttonWidth, buttonHeight, PINK);
 
     DrawText("Tabuleiros", xOfButtons + inBetweenTextX,
-        YOfButtons + inBetween + inBetweenTextY,
-        sizeOftext, WHITE);
+             YOfButtons + inBetween + inBetweenTextY,
+             sizeOftext, WHITE);
 
     if (CheckCollisionPointRec(mousePoint,rec2)) {
 
@@ -187,8 +185,8 @@ void menu(int& menuorboard) {
     DrawRectangleLines(xOfButtons, YOfButtons + (inBetween * 2), buttonWidth, buttonHeight, PINK);
 
     DrawText("Como jogar?", xOfButtons + inBetweenTextX,
-            YOfButtons + (inBetween * 2) + inBetweenTextY,
-            sizeOftext, WHITE);
+             YOfButtons + (inBetween * 2) + inBetweenTextY,
+             sizeOftext, WHITE);
 
     if (CheckCollisionPointRec(mousePoint,rec3)) {
 
@@ -203,9 +201,9 @@ void menu(int& menuorboard) {
 
 
     DrawText("Meu perfil", xOfButtons + inBetweenTextX,
-        YOfButtons + (inBetween * 3) + inBetweenTextY,
-        sizeOftext, WHITE
-    );
+             YOfButtons + (inBetween * 3) + inBetweenTextY,
+             sizeOftext, WHITE
+            );
 
     if (CheckCollisionPointRec(mousePoint,rec4)) {
 
@@ -223,25 +221,32 @@ void menu(int& menuorboard) {
 
     DrawRectangleLines(xOfButtons, YOfButtons + (inBetween * 4), buttonWidth, buttonHeight, PINK);
     DrawText("Sair",xOfButtons + inBetweenTextX,
-        YOfButtons + (inBetween * 4) + inBetweenTextY,
-        sizeOftext, WHITE
-    );
+             YOfButtons + (inBetween * 4) + inBetweenTextY,
+             sizeOftext, WHITE
+            );
 
     if (CheckCollisionPointRec(mousePoint,rec5)) {
-        DrawText("clique esc para sair", xOfButtons, screenHeight/3, sizeOftext2, WHITE);
         DrawTexture(mao,handX,YOfButtons + (inBetween * 4),RAYWHITE);
+        if(IsMouseButtonPressed(0))
+            exit(0);
+
     }
 
 
     EndDrawing();
 }
 
-void GameBoard(int& menuorboard){
+void GameBoard(int& menuorboard) {
+
     float screenHeight = GetScreenHeight();
     float screenwidth = GetScreenWidth();
 
     float buttonWidth = screenwidth/20;
     float buttonHeight = screenHeight/14;
+
+    float squareSize = screenHeight/20;
+    float squarex = screenwidth/2 - squareSize*4;
+    float squarey = screenHeight/2 - squareSize*4;
 
 
     Vector2 mousePoint = GetMousePosition();
@@ -250,9 +255,7 @@ void GameBoard(int& menuorboard){
 
 
     ClearBackground(GRAY);
-    float squareSize = screenHeight/20;
-    float squarex = screenwidth/2 - squareSize*4;
-    float squarey = screenHeight/2 - squareSize*4;
+
 
 
     Rectangle previous = {screenwidth/4 - buttonWidth,screenHeight/2 - buttonHeight/2,buttonWidth,buttonHeight};
@@ -280,70 +283,351 @@ void GameBoard(int& menuorboard){
 
         DrawText("voltar",screenwidth/4,(screenHeight*3)/4,screenwidth/30,WHITE);
 
-        if(IsMouseButtonPressed(0)){
+        if(IsMouseButtonPressed(0)) {
             menuorboard = 0;
         }
     }
 
     if (CheckCollisionPointRec(mousePoint,previous)) {
 
-         DrawText("<-",screenwidth/4 - buttonWidth + screenwidth/1000,
-                screenHeight/2 - buttonHeight/2 + screenHeight/1000,
-                screenwidth/20,WHITE);
+        DrawText("<-",screenwidth/4 - buttonWidth + screenwidth/1000,
+                 screenHeight/2 - buttonHeight/2 + screenHeight/1000,
+                 screenwidth/20,WHITE);
 
-        if(IsMouseButtonPressed(0))
-        if(selectionB > 0){
-            selectionB --;
-        }else{
-            selectionB = 10;
+        if(IsMouseButtonPressed(0)){
+            if(selectionB > 0) {
+                selectionB --;
+            } else {
+                selectionB = 10;
+            }
         }
     }
 
     if (CheckCollisionPointRec(mousePoint,next)) {
 
         DrawText("->",(screenwidth * 3)/4 - buttonWidth/2 + screenwidth/1000,
-             screenHeight/2 - buttonHeight/2 + screenHeight/1000,
-             screenwidth/20,WHITE);
+                 screenHeight/2 - buttonHeight/2 + screenHeight/1000,
+                 screenwidth/20,WHITE);
 
         if(IsMouseButtonPressed(0))
-        if(selectionB < 10){
-            selectionB ++;
-        }else{
-            selectionB = 0;
-        }
+            if(selectionB < 10) {
+                selectionB ++;
+            } else {
+                selectionB = 0;
+            }
     }
 
     char cores[11][50]= {"rosinha", "azul","roxinho","verdinho",
-                        "dourado","vermelho","vinho","esgoto","beeeje","escuro",
-                        "rosa choque"};
+                         "dourado","vermelho","vinho","esgoto","beeeje","escuro",
+                         "rosa choque"
+                        };
 
     Color colors[11] = {PINK,SKYBLUE,PURPLE,GREEN,
-                       GOLD,RED,MAROON,LIME,BEIGE,BLACK,MAGENTA};
+                        GOLD,RED,MAROON,LIME,BEIGE,BLACK,MAGENTA
+                       };
 
     DrawText(cores[selectionB],screenwidth/2 - screenwidth/10,
              screenHeight/10,screenwidth/20,colors[selectionB]);
 
 
 
-    for(int i = 0; i < 8; i++){
-        for(int j = 0; j < 8; j++){
+    for(int i = 0; i < 8; i++) {
+        for(int j = 0; j < 8; j++) {
             Color cor = ((i + j) % 2 == 0) ? WHITE : colors[selectionB];
             DrawRectangle(squarex + (j*squareSize),squarey+(i*squareSize),squareSize,squareSize,cor);
         }
     }
 
-
-    Board board;
-
     EndDrawing();
 }
 
+static void showLogin(Profile& player, int& menuorboard) {
 
-static void createLoginFile(){
+
+    char rating1[50];
+
+    float screenHeight = GetScreenHeight();
+    float screenwidth = GetScreenWidth();
+    float buttonWidth = screenwidth/5;
+    float buttonHeight = screenHeight/30;
+    float sizeFont = screenHeight/30;
+    float xButtonSave = screenwidth/4 + screenwidth/4 + buttonWidth/2;
+    float yButtonSave = (3*screenHeight)/4;
+    float umxai = screenwidth/4 + screenwidth/4 - buttonWidth/2;
+    float xtext = umxai + screenwidth/300;
+    float x = screenwidth/4 + screenwidth/100;
+    float ytext = screenHeight/3 + buttonHeight + screenHeight/500;
+
+    Rectangle saveRec = {xButtonSave,yButtonSave,buttonWidth/2,buttonHeight*2};
+    Rectangle retanguloGrande = {screenwidth/4,screenHeight/8,screenwidth/2,(screenHeight * 3)/4};
+    Rectangle voltar = {xButtonSave - buttonWidth * 1.5f,yButtonSave, buttonWidth/2,buttonHeight*2};
+
+
+    Vector2 mousePoint = GetMousePosition();
+
+    BeginDrawing();
+    ClearBackground(BLACK);
+
+    DrawRectangleRec(voltar,YELLOW);
+    DrawRectangleRec(saveRec,YELLOW);
+    DrawRectangleLinesEx(retanguloGrande,2,BLUE);
+
+    DrawText("voltar", xButtonSave - (buttonWidth*1.4), yButtonSave + screenHeight/50,sizeFont,BLACK);
+
+    if (CheckCollisionPointRec(mousePoint,voltar)) {
+
+        DrawText("voltar",xButtonSave - (buttonWidth*1.4), yButtonSave + screenHeight/50,sizeFont,WHITE);
+
+        if(IsMouseButtonPressed(0)) {
+            menuorboard = 0;
+        }
+    }
+
+    DrawText(player.name, umxai, screenHeight/5, sizeFont * 3, WHITE);
+
+    myitoa(player.rating,rating1);
+
+    DrawText("FIDE rating:",x,ytext + buttonHeight*2,sizeFont,RED);
+    DrawText(rating1,xtext,ytext + buttonHeight*2,sizeFont * 2,RED);
+    DrawText("Email:",x,ytext + buttonHeight * 6,sizeFont,YELLOW);
+    DrawText(player.email,x + sizeFont * 5,ytext + buttonHeight*6,sizeFont * 1.5,YELLOW);
+    DrawText("Editar",xButtonSave + screenwidth/50,yButtonSave+screenHeight/50,sizeFont,BLACK);
+
+    if (CheckCollisionPointRec(mousePoint,saveRec)) {
+        DrawText("Editar",xButtonSave + screenwidth/50,yButtonSave+screenHeight/50,sizeFont,WHITE);
+        if(IsMouseButtonPressed(0)) {
+            player.id = 0;
+            player.isLogged = false;
+        }
+    }
+}
+
+void makeLogin(Profile& player,int& menuorboard) {
+
+    /*daqui pra frente, veremos uma vasta quantidade de variaveis para definir tamanho e local de desenhar coisas na tela*/
+
+    char rating[50];
+    myitoa(player.rating,rating);
+
+    float screenHeight = GetScreenHeight();
+    float screenwidth = GetScreenWidth();
+
+    float buttonWidth = screenwidth/5;
+    float buttonHeight = screenHeight/30;
+
+
+    float umxai = screenwidth/4 + screenwidth/4 - buttonWidth/2;
+    float xtext = umxai + screenwidth/300;
+    float x = screenwidth/4 + screenwidth/100;
+
+    float xButtonSave = screenwidth/4 + screenwidth/4 + buttonWidth/2;
+    float yButtonSave = (3*screenHeight)/4;
+
+
+    float ytext = screenHeight/3 + buttonHeight + screenHeight/500;
+
+    Rectangle voltar = {xButtonSave - buttonWidth * 1.5f,yButtonSave, buttonWidth/2,buttonHeight*2};
+    Rectangle saveRec = {xButtonSave,yButtonSave,buttonWidth/2,buttonHeight*2};
+
+    Vector2 mousePoint = GetMousePosition();
+
+    BeginDrawing();
+    ClearBackground(BLACK);
+
+    DrawRectangleRec(voltar,YELLOW);
+
+    Rectangle retanguloGrande = {screenwidth/4,screenHeight/8,screenwidth/2,(screenHeight * 3)/4};
+
+    DrawRectangleLinesEx(retanguloGrande,2,BLUE);
+
+    float sizeFont = screenHeight/30;
+
+    DrawText("voltar", xButtonSave - (buttonWidth*1.4), yButtonSave + screenHeight/50,sizeFont,BLACK);
+
+    if (CheckCollisionPointRec(mousePoint,voltar)) {
+
+        DrawText("voltar",xButtonSave - (buttonWidth*1.4), yButtonSave + screenHeight/50,sizeFont,WHITE);
+
+        if(IsMouseButtonPressed(0)) {
+            menuorboard = 0;
+        }
+    }
+
+    DrawText("clique para digitar e enter para confirmar",
+             screenwidth/4 + screenwidth/200,
+             screenHeight/8 + screenHeight/80
+             ,sizeFont,WHITE);
+
+    Rectangle caixadetexto = {
+        umxai,
+        screenHeight/3 + buttonHeight,
+        buttonWidth,buttonHeight
+    };
+
+    DrawText("Nome:",umxai,screenHeight/3,sizeFont,RED);
+    DrawRectangleRec(caixadetexto,YELLOW);
+    DrawText(player.name,xtext,ytext,sizeFont,BLACK);
+
+    if (CheckCollisionPointRec(mousePoint,caixadetexto)) {
+        if(IsMouseButtonPressed(0)) {
+            istexting = true;
+            istextingr = false;
+            istextinge = false;
+        }
+    }
+
+
+    if (istexting) {
+
+        DrawText("Seu apelido",x,ytext - buttonHeight*4,sizeFont,WHITE);
+
+        DrawRectangleRec(caixadetexto,WHITE);
+        player.name[counter] = (char)GetCharPressed();
+
+        if(IsKeyPressed(KEY_BACKSPACE)) {
+            player.name[counter] = (char)0;
+            counter -= 2 ;
+            if(counter < 0) {
+                player.name[0] = (char)0;
+                counter = 0;
+            }
+        }
+        if(IsKeyPressed(KEY_ENTER)) {
+            istexting = false;
+        }
+        if((int)player.name[counter] != 0) {
+            counter ++;
+        }
+
+        DrawText(player.name,xtext,ytext,sizeFont,BLACK);
+
+    }
+
+    Rectangle caixadetextoR = {
+        umxai,
+        screenHeight/3 + buttonHeight * 3,
+        buttonWidth,buttonHeight
+    };
+
+    DrawText("Rating:",umxai,screenHeight/3 + buttonHeight * 2,sizeFont,RED);
+    DrawRectangleRec(caixadetextoR,YELLOW);
+    DrawText(rating,xtext,ytext + buttonHeight*2,sizeFont,BLACK);
+
+    if (CheckCollisionPointRec(mousePoint,caixadetextoR)) {
+        if(IsMouseButtonPressed(0)) {
+            istextingr = true;
+            istexting = false;
+            istextinge = false;
+        }
+    }
+
+    if (istextingr) {
+
+        DrawText("Seu FIDE rating",x,ytext - buttonHeight*4,sizeFont,WHITE);
+        DrawText("Caso não possua, digite 1000",x,ytext - buttonHeight*3,sizeFont,WHITE);
+
+        DrawRectangleRec(caixadetextoR,WHITE);
+
+        rating[counterR] = (char)GetCharPressed();
+
+        if((rating[counterR] < 48 || rating[counterR] > 57) && (int)rating[counterR] != 0) {
+            rating[counterR] = (char)0;
+            counterR -=2;
+            if(counterR < 0) {
+                rating[0] = (char)0;
+                counterR = 0;
+            }
+        }
+
+        if(IsKeyPressed(KEY_BACKSPACE)) {
+            rating[counterR] = (char)0;
+            counterR -= 2 ;
+            if(counterR < 0) {
+                rating[0] = (char)0;
+                counterR = 0;
+            }
+        }
+        if(IsKeyPressed(KEY_ENTER)) {
+
+            istextingr = false;
+
+        }
+
+        if((int)rating[counterR] != 0) {
+            counterR ++;
+        }
+        player.rating = atoi(rating);
+        DrawText(rating,xtext,ytext + buttonHeight*2,sizeFont,BLACK);
+    }
+
+
+    Rectangle caixadetextoE = {
+        umxai,
+        screenHeight/3 + buttonHeight * 5,
+        buttonWidth,buttonHeight
+    };
+
+    DrawText("Email:",umxai,screenHeight/3 + buttonHeight*4,sizeFont,RED);
+    DrawRectangleRec(caixadetextoE,YELLOW);
+    DrawText(player.email,xtext,ytext + buttonHeight*4,sizeFont,WHITE);
+
+    if (CheckCollisionPointRec(mousePoint,caixadetextoE)) {
+        if(IsMouseButtonPressed(0)) {
+            istexting = false;
+            istextingr = false;
+            istextinge = true;
+        }
+    }
+
+
+    if (istextinge) {
+
+        DrawText("Seu endereço de email",x,ytext - buttonHeight*4,sizeFont,WHITE);
+
+        DrawRectangleRec(caixadetextoE,WHITE);
+        player.email[countere] = (char)GetCharPressed();
+
+        if(IsKeyPressed(KEY_BACKSPACE)) {
+            player.email[countere] = (char)0;
+            countere -= 2;
+            if(countere < 0) {
+                player.email[0] = (char)0;
+                countere = 0;
+            }
+        }
+        if(IsKeyPressed(KEY_ENTER)) {
+            istextinge = false;
+        }
+        if((int)player.email[countere] != 0) {
+            countere ++;
+        }
+
+        DrawText(player.email,xtext,ytext + buttonHeight*4,sizeFont,BLACK);
+    }
+
+    DrawRectangleRec(saveRec,YELLOW);
+
+
+    DrawText("SALVAR",xButtonSave + screenwidth/50,yButtonSave+screenHeight/50,sizeFont,BLACK);
+
+    if (CheckCollisionPointRec(mousePoint,saveRec)) {
+        DrawText("SALVAR",xButtonSave + screenwidth/50,yButtonSave+screenHeight/50,sizeFont,WHITE);
+        if(IsMouseButtonPressed(0)) {
+            player.id = 1;
+            player.isLogged = true;
+            menuorboard = 0;
+        }
+
+    }
+}
+
+static void createLoginFile() {
+
+    /*criando um player "vazio"*/
 
     Profile player = {false,"",0,"",0};
 
-    const char * path = "games/login.txt";
+    const char * path = "login.txt";
 
     fstream file(path,ios::out);
 
@@ -353,287 +637,50 @@ static void createLoginFile(){
 
 }
 
-void login(int& menuorboard){
-    float screenHeight = GetScreenHeight();
-    float screenwidth = GetScreenWidth();
+void login(int& menuorboard) {
 
-    float buttonWidth = screenwidth/5;
-    float buttonHeight = screenHeight/30;
-
-    float umxai = screenwidth/4 + screenwidth/4 - buttonWidth/2;
-
-    Vector2 mousePoint = GetMousePosition();
-
-    BeginDrawing();
-    ClearBackground(BLACK);
-
-    Rectangle retanguloGrande = {screenwidth/4,screenHeight/8,screenwidth/2,(screenHeight * 3)/4};
-
-
-    DrawRectangleLinesEx(retanguloGrande,2,BLUE);
+    /*guardamos as informações do player em um arquivo binário para ler depois
+    as informações do usuário são guardadas em uma struct e a mesma escrita no arquivo no processo
+    de leitura, ja no processo de saida os dados da struct sao lidas no arquivo
+    tudo acontece nessa mesma função*/
 
     Profile player;
-
-    char rating[50];
-
-    float sizeFont = screenHeight/30;
-
-    float xButtonSave = screenwidth/4 + screenwidth/4 + buttonWidth/2;
-    float yButtonSave = (3*screenHeight)/4;
-
-    Rectangle saveRec = {xButtonSave,yButtonSave,buttonWidth/2,buttonHeight*2};
-
-
-    const char * path = "games/login.txt";
-
+    const char * path = "login.txt";
     fstream file(path,ios::in|ios::out);
 
-    if(file.fail()){
+    /*powered by Marcos Mota*/
+    /*essa função cria um arquivo caso seja a primeira utilização*/
+    if(file.fail()) {
         file.close();
         createLoginFile();
         file.open(path,ios::in|ios::out);
     }
-
-    float xtext = umxai + screenwidth/300;
-    float x = screenwidth/4 + screenwidth/100;
-
-    float ytext = screenHeight/3 + buttonHeight + screenHeight/500;
-    float widthtext = screenHeight/3 + buttonHeight + screenHeight/50+ (buttonHeight*3)/5;
-
     file.read((char *)(&player), sizeof(Profile));
 
-    if(player.isLogged){
+    /* a variavel islogged diz se o player vai para a  função de fazer
+        o mostrar  o cadastro ou de fazer o cadastro.
+        passamos o player  por referência em ambos ja que são essas funções
+        que irão pegar a entrada do usuário*/
 
-        Rectangle voltar = {xButtonSave - buttonWidth * 1.5f,yButtonSave, buttonWidth/2,buttonHeight*2};
-
-        DrawRectangleRec(voltar,YELLOW);
-
-        DrawText("voltar", xButtonSave - (buttonWidth*1.4), yButtonSave + screenHeight/50,sizeFont,BLACK);
-
-        if (CheckCollisionPointRec(mousePoint,voltar)) {
-
-            DrawText("voltar",xButtonSave - (buttonWidth*1.4), yButtonSave + screenHeight/50,sizeFont,WHITE);
-
-            if(IsMouseButtonPressed(0)){
-                menuorboard = 0;
-            }
-        }
-
-
-        DrawText(player.name, umxai, screenHeight/5, sizeFont * 3, WHITE);
-        char rating1[50];
-        myitoa(player.rating,rating1);
-        DrawText("FIDE rating:",x ,ytext + buttonHeight*2,sizeFont,RED);
-        DrawText(rating1,xtext,ytext + buttonHeight*2,sizeFont * 2,RED);
-        DrawText("Email:",x ,ytext + buttonHeight * 6,sizeFont,YELLOW);
-        DrawText(player.email,x + sizeFont * 5 ,ytext + buttonHeight*6,sizeFont * 1.5,YELLOW);
-
-        DrawRectangleRec(saveRec,YELLOW);
-
-        DrawText("Editar",xButtonSave + screenwidth/50,yButtonSave+screenHeight/50,sizeFont,BLACK);
-
-
-        if (CheckCollisionPointRec(mousePoint,saveRec)) {
-            DrawText("Editar",xButtonSave + screenwidth/50,yButtonSave+screenHeight/50,sizeFont,WHITE);
-            if(IsMouseButtonPressed(0)) {
-                player.id = 0;
-                player.isLogged = false;
-            }
-
-        }
-
-
-    }else{
-
-        DrawText("clique para digitar e enter para confirmar",
-                screenwidth/4 + screenwidth/200,
-                screenHeight/8 + screenHeight/80
-                ,sizeFont,WHITE);
-
-        Rectangle caixadetexto = {
-            umxai,
-            screenHeight/3 + buttonHeight,
-            buttonWidth,buttonHeight
-        };
-
-        DrawText("Nome:",umxai,screenHeight/3,sizeFont,RED);
-        DrawRectangleRec(caixadetexto,YELLOW);
-        DrawText(player.name,xtext,ytext,sizeFont,BLACK);
-
-        if (CheckCollisionPointRec(mousePoint,caixadetexto)) {
-            if(IsMouseButtonPressed(0)) {
-                istexting = true;
-                istextingr = false;
-                istextinge = false;
-            }
-        }
-
-
-        if (istexting){
-
-            DrawText("Seu apelido",x,ytext - buttonHeight*4,sizeFont,WHITE);
-
-            DrawRectangleRec(caixadetexto,WHITE);
-            player.name[counter] = (char)GetCharPressed();
-
-            if(IsKeyPressed(KEY_BACKSPACE)){
-                player.name[counter] = (char)0;
-                counter -= 2 ;
-                if(counter < 0){
-                    player.name[0] = (char)0;
-                    counter = 0;
-                }
-            }
-            if(IsKeyPressed(KEY_ENTER)){
-                istexting = false;
-            }
-            if((int)player.name[counter] != 0){
-                counter ++;
-            }
-
-            DrawText(player.name,xtext,ytext,sizeFont,BLACK);
-
-        }
-
-         Rectangle caixadetextoR = {
-            umxai,
-            screenHeight/3 + buttonHeight * 3,
-            buttonWidth,buttonHeight
-        };
-
-        DrawText("Rating:",umxai,screenHeight/3 + buttonHeight * 2,sizeFont,RED);
-        DrawRectangleRec(caixadetextoR,YELLOW);
-        DrawText(rating,xtext,ytext + buttonHeight*2,sizeFont,BLACK);
-
-        if (CheckCollisionPointRec(mousePoint,caixadetextoR)) {
-            if(IsMouseButtonPressed(0)) {
-                istextingr = true;
-                istexting = false;
-                istextinge = false;
-            }
-        }
-
-
-
-        if (istextingr){
-
-            DrawText("Seu FIDE rating",x,ytext - buttonHeight*4,sizeFont,WHITE);
-            DrawText("Caso não possua, digite 1000",x,ytext - buttonHeight*3,sizeFont,WHITE);
-
-            DrawRectangleRec(caixadetextoR,WHITE);
-
-            rating[counterR] = (char)GetCharPressed();
-
-            if((rating[counterR] < 48 || rating[counterR] > 57) && (int)rating[counterR] != 0){
-                rating[counterR] = (char)0;
-                counterR -=2;
-                if(counterR < 0){
-                    rating[0] = (char)0;
-                    counterR = 0;
-                }
-            }
-
-            if(IsKeyPressed(KEY_BACKSPACE)){
-                rating[counterR] = (char)0;
-                counterR -= 2 ;
-                if(counterR < 0){
-                    rating[0] = (char)0;
-                    counterR = 0;
-                }
-            }
-            if(IsKeyPressed(KEY_ENTER)){
-
-                istextingr = false;
-
-            }
-
-            if((int)rating[counterR] != 0){
-                counterR ++;
-            }
-            player.rating = atoi(rating);
-            DrawText(rating,xtext,ytext + buttonHeight*2,sizeFont,BLACK);
-        }
-
-
-
-        Rectangle caixadetextoE = {
-            umxai,
-            screenHeight/3 + buttonHeight * 5,
-            buttonWidth,buttonHeight
-        };
-
-        DrawText("Email:",umxai,screenHeight/3 + buttonHeight*4,sizeFont,RED);
-        DrawRectangleRec(caixadetextoE,YELLOW);
-        DrawText(player.email,xtext,ytext + buttonHeight*4,sizeFont,WHITE);
-
-        if (CheckCollisionPointRec(mousePoint,caixadetextoE)) {
-            if(IsMouseButtonPressed(0)) {
-                istexting = false;
-                istextingr = false;
-                istextinge = true;
-            }
-        }
-
-
-        if (istextinge){
-
-            DrawText("Seu endereço de email",x,ytext - buttonHeight*4,sizeFont,WHITE);
-
-            DrawRectangleRec(caixadetextoE,WHITE);
-            player.email[countere] = (char)GetCharPressed();
-
-            if(IsKeyPressed(KEY_BACKSPACE)){
-                player.email[countere] = (char)0;
-                countere -= 2;
-                if(countere < 0){
-                    player.email[0] = (char)0;
-                    countere = 0;
-                }
-            }
-            if(IsKeyPressed(KEY_ENTER)){
-                istextinge = false;
-            }
-            if((int)player.email[countere] != 0){
-                countere ++;
-            }
-
-            DrawText(player.email,xtext,ytext + buttonHeight*4,sizeFont,BLACK);
-        }
-
-        DrawRectangleRec(saveRec,YELLOW);
-
-
-        DrawText("SALVAR",xButtonSave + screenwidth/50,yButtonSave+screenHeight/50,sizeFont,BLACK);
-
-        if (CheckCollisionPointRec(mousePoint,saveRec)) {
-            DrawText("SALVAR",xButtonSave + screenwidth/50,yButtonSave+screenHeight/50,sizeFont,WHITE);
-            if(IsMouseButtonPressed(0)) {
-                player.id = 1;
-                player.isLogged = true;
-                menuorboard = 0;
-            }
-
-        }
-
-    }
+    if(player.isLogged)
+        showLogin(player,menuorboard);
+    else
+        makeLogin(player,menuorboard);
 
     file.close();
 
+    /*fechamos o arquivo e atualizamos com a struct que ja temos*/
 
     file.open(path,ios::out);
 
     file.write((const char *)(&player),sizeof(Profile));
 
-
     file.close();
-
-
 
     EndDrawing();
 
 
 }
-
 
 void gamemode(int &menuorboard) {
 
@@ -662,18 +709,18 @@ void gamemode(int &menuorboard) {
     Rectangle botao3 = {botao1X, botao3Y, screenWidth/4, screenHeight/8};
 
     DrawRectangleRounded(botao1, 0.5, sizeOftext, DARKGREEN);
-    DrawText("Dois jogadores",botao1X + 30, botao1Y + 30 ,sizeOftext, WHITE);
+    DrawText("Dois jogadores",botao1X + 30, botao1Y + 30,sizeOftext, WHITE);
 
     DrawRectangleRounded(botao2,0.5,sizeOftext, DARKGREEN);
-    DrawText("Contra o computador", botao1X + 30, botao2Y + 30 ,sizeOftext, WHITE);
+    DrawText("Contra o computador", botao1X + 30, botao2Y + 30,sizeOftext, WHITE);
 
     DrawRectangleRounded(botao3,0.5,sizeOftext, DARKGREEN);
-    DrawText("Voltar", botao1X + 30, botao3Y + 30 ,sizeOftext, WHITE);
+    DrawText("Voltar", botao1X + 30, botao3Y + 30,sizeOftext, WHITE);
 
     if (CheckCollisionPointRec(mousePoint,botao1)) {
 
         DrawRectangleRounded(botao1, 0.5, sizeOftext, RED);
-         DrawText("Dois jogadores",botao1X + 30, botao1Y + 30 ,sizeOftext, WHITE);
+        DrawText("Dois jogadores",botao1X + 30, botao1Y + 30,sizeOftext, WHITE);
 
         if(IsMouseButtonPressed(0)) {
             isSinglePlayer = 0;
@@ -684,17 +731,17 @@ void gamemode(int &menuorboard) {
     if (CheckCollisionPointRec(mousePoint,botao2)) {
 
         DrawRectangleRounded(botao2,0.5,sizeOftext, GREEN);
-        DrawText("Contra o computador", botao1X + 30, botao2Y + 30 ,sizeOftext, WHITE);
+        DrawText("Contra o computador", botao1X + 30, botao2Y + 30,sizeOftext, WHITE);
         if(IsMouseButtonPressed(0)) {
 
-             menuorboard = 4;
+            menuorboard = 4;
         }
     }
 
     if (CheckCollisionPointRec(mousePoint,botao3)) {
 
         DrawRectangleRounded(botao3,0.5,sizeOftext, PINK);
-        DrawText("Voltar", botao1X + 30, botao3Y + 30 ,sizeOftext, WHITE);
+        DrawText("Voltar", botao1X + 30, botao3Y + 30,sizeOftext, WHITE);
         if(IsMouseButtonPressed(0)) {
             menuorboard = 0;
         }
@@ -706,7 +753,7 @@ void gamemode(int &menuorboard) {
 
 }
 
-void gameDificult(int& menuorboard){
+void gameDificult(int& menuorboard) {
 
     BeginDrawing(); // Comando para iniciar a desenhar
     ClearBackground(BLACK); //
@@ -733,22 +780,22 @@ void gameDificult(int& menuorboard){
     Rectangle botao3 = {botao1X, botao3Y, screenWidth/4, screenHeight/8};
 
     DrawRectangleRounded(botao1, 0.5, sizeOftext, DARKGREEN);
-    DrawText("Fácil",botao1X + 30, botao1Y + 30 ,sizeOftext, WHITE);
+    DrawText("Fácil",botao1X + 30, botao1Y + 30,sizeOftext, WHITE);
 
     DrawRectangleRounded(botao2,0.5,sizeOftext, DARKGREEN);
-    DrawText("Médio", botao1X + 30, botao2Y + 30 ,sizeOftext, WHITE);
+    DrawText("Médio", botao1X + 30, botao2Y + 30,sizeOftext, WHITE);
 
     DrawRectangleRounded(botao3,0.5,sizeOftext, DARKGREEN);
-    DrawText("Dificil", botao1X + 30, botao3Y + 30 ,sizeOftext, WHITE);
+    DrawText("Dificil", botao1X + 30, botao3Y + 30,sizeOftext, WHITE);
 
     if (CheckCollisionPointRec(mousePoint,botao1)) {
 
         DrawRectangleRounded(botao1, 0.5, sizeOftext, GREEN);
-         DrawText("Fácil",botao1X + 30, botao1Y + 30 ,sizeOftext, WHITE);
+        DrawText("Fácil",botao1X + 30, botao1Y + 30,sizeOftext, WHITE);
 
         if(IsMouseButtonPressed(0)) {
             isSinglePlayer = 1;
-            saxaDepht = 1;
+            saxaDephtBoard = 0;
             menuorboard = 1;
         }
     }
@@ -756,11 +803,11 @@ void gameDificult(int& menuorboard){
     if (CheckCollisionPointRec(mousePoint,botao2)) {
 
         DrawRectangleRounded(botao2,0.5,sizeOftext, YELLOW);
-        DrawText("vai travar um pouco em ...", botao1X + 30, botao2Y + 30 ,sizeOftext, WHITE);
+        DrawText("vai travar um pouco em ...", botao1X + 30, botao2Y + 30,sizeOftext, WHITE);
         if(IsMouseButtonPressed(0)) {
 
             isSinglePlayer = 1;
-            saxaDepht = 2;
+            saxaDephtBoard = 1;
             menuorboard = 1;
         }
     }
@@ -768,10 +815,10 @@ void gameDificult(int& menuorboard){
     if (CheckCollisionPointRec(mousePoint,botao3)) {
 
         DrawRectangleRounded(botao3,0.5,sizeOftext, RED);
-        DrawText("vai travar demais !!!", botao1X + 30, botao3Y + 30 ,sizeOftext, WHITE);
+        DrawText("vai travar demais !!!", botao1X + 30, botao3Y + 30,sizeOftext, WHITE);
         if(IsMouseButtonPressed(0)) {
-           isSinglePlayer = 1;
-            saxaDepht = 3;
+            isSinglePlayer = 1;
+            saxaDephtBoard = 2;
             menuorboard = 1;
         }
     }
@@ -787,7 +834,6 @@ void tutorial(int &menuorboard) {
     float screenHeight = GetScreenHeight();
 
     float xOfButtons = screenWidth/19;
-    float YOfButtons = screenHeight/2;
 
     float xbotao1 = screenWidth/13;
     float xbotao2 = screenWidth/3;
@@ -796,16 +842,14 @@ void tutorial(int &menuorboard) {
     float alturaBorda = screenHeight/200;
 
     float buttonWidth = screenWidth/5;
-    float buttonHeight = screenHeight/30;
-
     float sizeOftext = screenHeight/35;
 
     BeginDrawing();
     ClearBackground(BLACK); // Comando para pintar o background
 
 
-    Rectangle quadro = {xOfButtons,xOfButtons,screenWidth/2 - larguraBorda * 2 ,screenHeight/2 - alturaBorda * 2};
-    Rectangle borda = {xOfButtons - larguraBorda, xOfButtons - alturaBorda,screenWidth/2 ,screenHeight/2};
+    Rectangle quadro = {xOfButtons,xOfButtons,screenWidth/2 - larguraBorda * 2,screenHeight/2 - alturaBorda * 2};
+    Rectangle borda = {xOfButtons - larguraBorda, xOfButtons - alturaBorda,screenWidth/2,screenHeight/2};
 
     Rectangle botao1 = {xbotao1, screenHeight/1.5f, buttonWidth, xOfButtons};
     Rectangle botao2 = {xbotao2, screenHeight/1.5f, buttonWidth, xOfButtons};
@@ -972,7 +1016,7 @@ void tutorial(int &menuorboard) {
     if (CheckCollisionPointRec(mousePoint,botao3)) {
 
         DrawRectangleRounded(botao3,0.5,sizeOftext, GREEN);
-         DrawText("Voltar",screenWidth/1.30, screenHeight/1.45,sizeOftext, WHITE);
+        DrawText("Voltar",screenWidth/1.30, screenHeight/1.45,sizeOftext, WHITE);
 
         if(IsMouseButtonPressed(0)) {
             menuorboard = 0;
@@ -1100,8 +1144,7 @@ bool BoardLoadFEN(Board& board, const char fen[BOARD_FEN_LENGTH]) {
     return true;
 }
 
-bool BoardLoadFEN(Board& board)
-{
+bool BoardLoadFEN(Board& board) {
     char fenString[BOARD_FEN_LENGTH] = { '\0' };
 
     FILE *fenFile = fopen("board_fen.data", "r");
@@ -1126,8 +1169,8 @@ bool BoardLoadFEN(Board& board)
     return BoardLoadFEN(board, BOARD_FEN_DEFAULT);
 }
 
-bool BoardSaveFEN(Board &board)
-{
+bool BoardSaveFEN(Board &board) {
+
     const char pieces_data[6] = {
         'k', 'q', 'b', 'n', 'r', 'p',
     };
@@ -1180,15 +1223,15 @@ bool BoardSaveFEN(Board &board)
         fprintf(fenFile, " -");
     else
         fprintf(fenFile, " %s%s",
-            castling_data[board.state.castlingWhite],
-            castling_data[board.state.castlingBlack + 4]);
+                castling_data[board.state.castlingWhite],
+                castling_data[board.state.castlingBlack + 4]);
 
     if (board.state.enPassantSquare == 0)
         fprintf(fenFile, " -");
     else
         fprintf(fenFile, " %c%d",
-            PieceFile(board.state.enPassantSquare) + 'a',
-            8 - PieceRank(board.state.enPassantSquare));
+                PieceFile(board.state.enPassantSquare) + 'a',
+                8 - PieceRank(board.state.enPassantSquare));
 
     fprintf(fenFile, " %d %d", board.state.halfmoves, board.state.fullmoves);
     fclose(fenFile);
@@ -1202,7 +1245,7 @@ void BoardUnload(Board& board) {
 
 void BoardResize(Board& board, int screenWidth, int screenHeight) {
     board.squareLength = (screenWidth < screenHeight ? screenWidth : screenHeight)
-        / BOARD_SQUARE_LENGTH_FACTOR;
+                         / BOARD_SQUARE_LENGTH_FACTOR;
 
     board.drawPosition = {
         (screenWidth / 2.f) - (board.squareLength * 4),
@@ -1216,7 +1259,7 @@ bool BoardMakeMove(Board& board, int from, int to, bool updateWhoMoves) {
         return false;
 
     const int enPassantSquare = board.state.enPassantSquare
-        + (PieceHasColor(board.squares[from], PIECE_BLACK) ? -8 : 8);
+                                + (PieceHasColor(board.squares[from], PIECE_BLACK) ? -8 : 8);
 
     int castlingSide;
 
@@ -1245,7 +1288,7 @@ bool BoardMakeMove(Board& board, int from, int to, bool updateWhoMoves) {
         if (updateWhoMoves)
             board.state.halfmoves = 0;
 
-        /* fall through */
+    /* fall through */
 
     case MOVE_NORMAL:
         board.squares[to] = board.squares[from];
@@ -1287,7 +1330,7 @@ bool BoardMakeMove(Board& board, int from, int to, bool updateWhoMoves) {
             board.state.castlingWhite = CASTLING_NONE;
         else
             board.state.castlingBlack = CASTLING_NONE;
-    /* Disable one side castling because the rook has moved */
+        /* Disable one side castling because the rook has moved */
     } else if (PieceHasType(board.squares[from], PIECE_ROOK)) {
         /* Queen side rooks */
         if (from == 56 || from == 0)
@@ -1387,8 +1430,8 @@ void BoardUpdate(Board& board) {
 
         if (!board.state.waitPromotion) {
             if(board.state.whoMoves == PIECE_BLACK) {
-                saxa_move saxaMove = finalMoveGrade(board,saxaDepht);
-                BoardMakeMove(board,saxaMove.from,saxaMove.to,true);
+                saxa_move Move = saxamove(board,saxaDephtBoard,PIECE_BLACK);
+                BoardMakeMove(board,Move.from,Move.to,true);
             }
         }
     } else if (BoardKingInMate(board, board.state.whoMoves)) {
@@ -1424,8 +1467,8 @@ void BoardUpdate(Board& board) {
                     board.movingPiece.position = square;
             } else if (IsMouseButtonUp(MOUSE_BUTTON_LEFT)) {
                 if ((board.movingPiece.dragging
-                            || (board.movingPiece.selecting
-                                && board.movingPiece.position != square))
+                        || (board.movingPiece.selecting
+                            && board.movingPiece.position != square))
                         && clicked) {
                     board.movingPiece.dragging = false;
                     board.movingPiece.selecting = false;
@@ -1452,10 +1495,10 @@ void BoardUpdate(Board& board) {
         }
     }
 
-    if(isSinglePlayer && !board.state.waitPromotion) {
+    if(isSinglePlayer  && !board.state.waitPromotion) {
         if(board.state.whoMoves == PIECE_BLACK) {
-            saxa_move saxaMove = finalMoveGrade(board,saxaDepht);
-            BoardMakeMove(board,saxaMove.from,saxaMove.to,true);
+            saxa_move Move = saxamove(board,saxaDephtBoard,PIECE_BLACK);
+            BoardMakeMove(board,Move.from,Move.to,true);
         }
     }
 
@@ -1479,22 +1522,23 @@ void BoardDraw(Board &board, int &menu) {
     };
 
     Color colors[11] = {PINK,SKYBLUE,PURPLE,GREEN,
-                       GOLD,RED,MAROON,LIME,BEIGE,BLACK,MAGENTA};
+                        GOLD,RED,MAROON,LIME,BEIGE,BLACK,MAGENTA
+                       };
 
     Color color, opositeColor;
 
     for (int square = 0; square < 64; square++) {
         squarePosition.x = board.drawPosition.x + squarePosition.width
-           * PieceFile(square);
+                           * PieceFile(square);
         squarePosition.y = board.drawPosition.y + squarePosition.height
-           * PieceRank(square);
+                           * PieceRank(square);
 
         if ((PieceRank(square) + PieceFile(square)) % 2) {
 
 
-            if(selectionB == 0){
+            if(selectionB == 0) {
                 color = board.squareBlackColor;
-            }else{
+            } else {
                 color = colors[selectionB];
             }
 
@@ -1528,6 +1572,7 @@ void BoardDraw(Board &board, int &menu) {
 }
 
 static void generateMoves(Board& board, bool onlyLegalMoves) {
+
     bool legalMoves = false;
 
     /* Reset the moves list, setting all bytes to zero */
@@ -1592,6 +1637,7 @@ static void generateMoves(Board& board, bool onlyLegalMoves) {
 }
 
 static void generateKingMoves(Board& board, int square, bool legalMove) {
+
     static const int directionOffsets[8][2] = {
         {  0, -1 }, {  0,  1 },
         { -1, -1 }, { -1,  1 },
@@ -1600,10 +1646,10 @@ static void generateKingMoves(Board& board, int square, bool legalMove) {
     };
 
     const bool castlingKing = (board.state.whoMoves == PIECE_WHITE ?
-        board.state.castlingWhite : board.state.castlingBlack) & CASTLING_KING_SIDE;
+                               board.state.castlingWhite : board.state.castlingBlack) & CASTLING_KING_SIDE;
 
     const bool castlingQueen = (board.state.whoMoves == PIECE_WHITE ?
-        board.state.castlingWhite : board.state.castlingBlack) & CASTLING_QUEEN_SIDE;
+                                board.state.castlingWhite : board.state.castlingBlack) & CASTLING_QUEEN_SIDE;
 
     int targetSquare;
     int targetRank;
@@ -1647,7 +1693,7 @@ static void generateKingMoves(Board& board, int square, bool legalMove) {
                      */
                     if (!PieceHasType(board.squares[targetSquare], PIECE_NONE))
                         break;
-                /* Can't castling on captures */
+                    /* Can't castling on captures */
                 } else if (PieceHasType(board.squares[targetSquare], PIECE_NONE)) {
                     board.move.list[square][targetSquare] = castlingSide;
                     board.move.count++;
@@ -1896,8 +1942,7 @@ static void updatePromotionMenu(Board& board) {
     }
 }
 
-static void backButton(Board &board, int &menu)
-{
+static void backButton(Board &board, int &menu) {
     static int clickOption = 0;
     static bool mouseOver = false;
 
@@ -1939,20 +1984,17 @@ static void backButton(Board &board, int &menu)
 
     DrawRectangleRounded(backButtonRectangle, 0.5f, 0, board.squareBlackColor);
 
-    DrawTriangle(
-        {
-            backButtonRectangle.x + backButtonRectangle.width * 0.8f,
-            backButtonRectangle.y * 1.08f
-        },
-        {
-            backButtonRectangle.x + backButtonRectangle.width * 0.2f,
-            backButtonRectangle.y + backButtonRectangle.height / 2.f
-        },
-        {
-            backButtonRectangle.x + backButtonRectangle.width * 0.8f,
-            backButtonRectangle.y + backButtonRectangle.height * 0.86f
-        },
-        board.squareWhiteColor);
+    DrawTriangle( {
+        backButtonRectangle.x + backButtonRectangle.width * 0.8f,
+        backButtonRectangle.y * 1.08f
+    }, {
+        backButtonRectangle.x + backButtonRectangle.width * 0.2f,
+        backButtonRectangle.y + backButtonRectangle.height / 2.f
+    }, {
+        backButtonRectangle.x + backButtonRectangle.width * 0.8f,
+        backButtonRectangle.y + backButtonRectangle.height * 0.86f
+    },
+    board.squareWhiteColor);
 
     if (board.backButtonClicked) {
         DrawRectangleRounded(windowRectangle, 0.2f, 0, board.squareBlackColor);
@@ -1972,17 +2014,26 @@ static void backButton(Board &board, int &menu)
                 if (clickOption == 0 && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
                     clickOption = i + 1;
                 } else if (IsMouseButtonUp(MOUSE_LEFT_BUTTON)) {
-                    if (clickOption == i + 1 && clickOption <= 2) {
-                        if (clickOption == 2)
-                            BoardSaveFEN(board);
-                        else
-                            BoardInit(board);
+                    if (clickOption == i + 1 && clickOption <= 3) {
 
-                        menu = 0;
+                        if(clickOption == 1) {
+                            BoardInit(board);
+                            board.backButtonClicked = false;
+
+                        } else if (clickOption == 2) {
+                            BoardSaveFEN(board);
+                            board.backButtonClicked = false;
+
+                        } else if(clickOption == 3) {
+                            board.backButtonClicked = false;
+
+                        }
+                        if(clickOption!=3)
+                            menu = 0;
                     }
 
                     clickOption = 0;
-                    board.backButtonClicked = false;
+
                 }
             } else {
                 mouseOver = false;
@@ -2050,7 +2101,7 @@ static void drawPiece(Board board, Rectangle drawPosition, int square, Color col
         drawPosition.y += drawPosition.height / 2.f;
 
         DrawRing({ drawPosition.x, drawPosition.y }, board.squareLength * 0.4, board.squareLength * 0.5,
-            board.movingPiece.ringRotation, 360 + board.movingPiece.ringRotation, 6, color);
+                 board.movingPiece.ringRotation, 360 + board.movingPiece.ringRotation, 6, color);
 
         drawPosition.width *= 0.7;
         drawPosition.height *= 0.7;
@@ -2062,15 +2113,15 @@ static void drawPiece(Board board, Rectangle drawPosition, int square, Color col
         spritePosition.y = spritePosition.height * PieceHasColor(board.squares[square], PIECE_BLACK);
 
         DrawTexturePro(board.pieceSpriteSheet, spritePosition, drawPosition, { 0,0 }, 0, WHITE);
-    /* In here draw a replacement of the piece image that's dragging in this
-     * case.
-     */
+        /* In here draw a replacement of the piece image that's dragging in this
+         * case.
+         */
     } else {
         drawPosition.x += drawPosition.width / 2.f;
         drawPosition.y += drawPosition.height / 2.f;
 
         DrawRing({ drawPosition.x, drawPosition.y }, board.squareLength * 0.4, board.squareLength * 0.5,
-            board.movingPiece.ringRotation, 360 + board.movingPiece.ringRotation, 6, color);
+                 board.movingPiece.ringRotation, 360 + board.movingPiece.ringRotation, 6, color);
     }
 }
 
@@ -2195,7 +2246,7 @@ static void drawMateWindow(Board &board, int &menu) {
     DrawRectangleRoundedLines(windowRectangle, 0.2f, 0, 3, board.squareWhiteColor);
 
     DrawTexturePro(board.pieceSpriteSheet, spriteRectangle, spritePosition,
-        { 0,0 }, 0, WHITE);
+    { 0,0 }, 0, WHITE);
     DrawText(wonText, wonTextPosX, wonTextPosY, wonFontSize, board.squareWhiteColor);
 
     DrawRectangleRounded(btnRectangle, 0.5f, 0, board.squareWhiteColor);
@@ -2212,12 +2263,12 @@ static void drawMateWindow(Board &board, int &menu) {
         if (CheckCollisionPointRec(GetMousePosition(), btnRectangle))
             click = true;
     } else if (IsMouseButtonUp(MOUSE_BUTTON_LEFT)) {
-            if (click && CheckCollisionPointRec(GetMousePosition(), btnRectangle)) {
-                menu = 0;
-                BoardInit(board);
-            }
+        if (click && CheckCollisionPointRec(GetMousePosition(), btnRectangle)) {
+            menu = 0;
+            BoardInit(board);
+        }
 
-            click = false;
+        click = false;
     }
 }
 

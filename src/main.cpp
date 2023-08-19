@@ -1,12 +1,14 @@
-#include "raylib.h"
+#include "raylib/raylib.h"
 #include "Board.hpp"
 #include <stdio.h>
 
 #define SCREEN_TITLE  "Xuxa"
 
 #ifndef BOARD_PERFT
+
 int main(void) {
-    int menuorboard = 0;//variavel para saber onde ta o menu
+
+    int menuorboard = 0; //variavel para saber onde ta o menu
 
     Board board;
 
@@ -20,6 +22,7 @@ int main(void) {
      * the center of the window. This prevent some bugs when start
      * drawing the square that's the mouse is in.
      */
+
     SetMousePosition(screenWidth / 2 + 1, screenHeight / 2 + 1);
 
     board = BoardInit(screenWidth, screenHeight);
@@ -71,14 +74,10 @@ int main(void) {
             GameBoard(menuorboard);
             break;
 
-
-
-
-
         }
     }
     BoardUnload(board);
-    //  Unloads dos arquivos que foram feitos uploads
+    //Unloads dos arquivos que foram feitos uploads
 
     CloseWindow();
 

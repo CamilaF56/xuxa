@@ -130,21 +130,21 @@
 		<Linker>
 			<Add option="-Wl,--no-undefined" />
 		</Linker>
-		<Unit filename="include/Board.hpp" />
-		<Unit filename="include/Piece.hpp" />
-		<Unit filename="include/SAXA.hpp" />
+		<Unit filename="include/Board.hpp">
+			<Option compile="1" />
+		</Unit>
+		<Unit filename="include/Piece.hpp">
+			<Option compile="1" />
+		</Unit>
+		<Unit filename="include/SAXA.hpp">
+			<Option compile="1" />
+		</Unit>
 		<Unit filename="src/Board.cpp" />
 		<Unit filename="src/main.cpp" />
-		<Unit filename="src/raylib/raudio.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="src/raylib/rcore.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/raylib/rglfw.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/raylib/rmodels.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/raylib/rshapes.c">

@@ -29,6 +29,7 @@ typedef enum {
 
     MOVE_CASTLING_KING,
     MOVE_CASTLING_QUEEN,
+
 } MoveType;
 
 typedef enum {
@@ -72,7 +73,6 @@ typedef struct {
         int position;
         bool dragging;
         bool selecting;
-
         float ringRotation;
     } movingPiece;
 
